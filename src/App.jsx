@@ -1,6 +1,7 @@
 import { useState } from "react";
 import User from "./components/User";
 import Button from "./components/Button";
+let sortedName = [];
 let editedUserId = 0;
 let users = [
   {
@@ -34,6 +35,7 @@ let users = [
     id: 5555,
   },
 ];
+
 function App() {
   let [formData, setFormData] = useState({
     name: "",
@@ -97,10 +99,21 @@ function App() {
     setFormData({ ...formData, name: "", phone: "", email: "" });
     setActiveButtonName("Add User");
   };
-  const searchByUser = (name) => {
-    const filteredData = data.filter((data) => data.name !== name);
+  const searchByName = () => {
+    const filteredData = data.filter((data) => data.name === inputSearch);
     setFilteredData(filteredData);
-    setFormData({ ...formData, name: "", phone: "", email: "" });
+  };
+  const sort = () => {
+    let newArray = [];
+    newArray = data.map((data) => [...newArray, data.name]);
+    sortedName = newArray.sort();
+    console.log("sortedArray", newArray);
+    let sortodData = [];
+    sortedName.map((Name) => {
+      sortodData = data.filter((user) => user.name === Name);
+    });
+
+    console.log("sortedNameArray", sortodData);
   };
   return (
     <div className="flex flex-col bg-[#F3F4F6] items-center w-screen h-screen gap-[20px]">
@@ -162,35 +175,69 @@ function App() {
         )}
       </div>
 
-      {/* Search */}
+      {/* Search button*/}
       {data.length !== 0 && (
-        <div className="bg-[#3C82F6] flex w-fit text-black rounded-md px-[10px] py-[5px] gap-2">
-          {/* <span>Search by:</span> */}
+        <div className="bg-[#3C82F6] flex w-fit rounded-md px-[10px] py-[5px] gap-2">
           <input
             className="pl-1"
             type="search"
-            // onChange={}
+            onChange={(e) => {
+              setInputSearch(e.target.value);
+            }}
             placeholder="name"
-            // value={searchName}
+            value={inputSearch}
           />
-          <button onClick={searchByUser}>Search</button>
+          <button
+            className="text-white "
+            key="name"
+            onClick={() => searchByName()}
+          >
+            Search
+          </button>
         </div>
       )}
+      {/* Sort button */}
+      <div>
+        <button
+          className=" bg-[#3C82F6] text-white border-none rounded-sm w-fit px-[10px] py-[5px] gap-2"
+          onClick={sort}
+        >
+          Sort (A-Z)
+        </button>
+      </div>
+
+      {/* search print */}
+      {inputSearch !== "" &&
+        filteredData.map((user) => {
+          return (
+            <User
+              name={user.name}
+              phone={user.phone}
+              email={user.email}
+              id={user.id}
+              deleteUser={deleteUser}
+              editUser={editUser}
+              key={user.id}
+            />
+          );
+        })}
+
       {/* data print */}
 
-      {data.map((user) => {
-        return (
-          <User
-            name={user.name}
-            phone={user.phone}
-            email={user.email}
-            id={user.id}
-            deleteUser={deleteUser}
-            editUser={editUser}
-            key={user.id}
-          />
-        );
-      })}
+      {inputSearch === "" &&
+        data.map((user) => {
+          return (
+            <User
+              name={user.name}
+              phone={user.phone}
+              email={user.email}
+              id={user.id}
+              deleteUser={deleteUser}
+              editUser={editUser}
+              key={user.id}
+            />
+          );
+        })}
     </div>
   );
 }
