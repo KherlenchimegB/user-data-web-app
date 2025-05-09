@@ -2,14 +2,14 @@ const User = (props) => {
   return (
     <div className="w-[440px] flex items-center justify-between bg-white size-fit rounded-md p-[16px] gap-[13px]">
       <div className="flex flex-col gap-1">
-        <span className="font-semibold text-md">{props.name}</span>
+        <span className="font-semibold capitalize text-md">{props.name}</span>
         <div className="flex gap-[10px] text-xs">
           <img className="w-4 h-4" src="./images/phone.svg" alt="phone icon" />
           <span>{props.phone}</span>
         </div>
         <div className="flex gap-[10px] text-xs">
           <img className="w-4 h-4" src="./images/email.svg" alt="email icon" />
-          <span>{props.email}</span>
+          <span className="lowercase">{props.email}</span>
         </div>
       </div>
 

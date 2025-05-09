@@ -1,38 +1,27 @@
 import { useState } from "react";
 import User from "./components/User";
-import Button from "./components/Button";
+import { Button, SearchByNameButton, SortButton } from "./components/Button";
+import InputForm from "./components/InputForm";
 let sortedName = [];
 let editedUserId = 0;
 let users = [
   {
-    name: "Kherlenchimeg",
+    name: "kherlenchimeg",
     phone: "99887080",
     email: "b.kherlenchimeg@gmail.com",
     id: 1111,
   },
   {
-    name: "Bold",
+    name: "bold",
     phone: "91992810",
-    email: "tungalag@gmail.com",
+    email: "bold@gmail.com",
     id: 2222,
   },
   {
-    name: "Dorj",
+    name: "dorj",
     phone: "88888888",
     email: "dorj@gmail.com",
     id: 3333,
-  },
-  {
-    name: "Dulam",
-    phone: "99999999",
-    email: "dulam@gmail.com",
-    id: 4444,
-  },
-  {
-    name: "Batsuren",
-    phone: "88112233",
-    email: "bat@gmail.com",
-    id: 5555,
   },
 ];
 
@@ -42,10 +31,10 @@ function App() {
     phone: "",
     email: "",
   });
-  let [data, setData] = useState(users);
-  let [filteredData, setFilteredData] = useState(data);
-  let [inputSearch, setInputSearch] = useState("");
-  let [activeButtonName, setActiveButtonName] = useState("Add User");
+  const [data, setData] = useState(users);
+  const [filteredData, setFilteredData] = useState(data);
+  const [inputSearch, setInputSearch] = useState("");
+  const [activeButtonName, setActiveButtonName] = useState("Add User");
 
   const addUser = () => {
     if (
@@ -57,9 +46,9 @@ function App() {
       return;
     }
     const newUser = {
-      name: formData.name,
+      name: formData.name.toLowerCase(),
       phone: formData.phone,
-      email: formData.email,
+      email: formData.email.toLowerCase(),
       id: Date.now(),
     };
     setData([...data, newUser]);
@@ -68,6 +57,11 @@ function App() {
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       addUser();
+    }
+  };
+  const searchKeyDown = (event) => {
+    if (event.key === "Enter") {
+      searchByName();
     }
   };
   const deleteUser = (id) => {
@@ -100,73 +94,37 @@ function App() {
     setActiveButtonName("Add User");
   };
   const searchByName = () => {
-    const filteredData = data.filter((data) => data.name === inputSearch);
+    let filteredData = data.filter((data) => data.name === inputSearch);
     setFilteredData(filteredData);
   };
   const sort = () => {
     let newArray = [];
     newArray = data.map((data) => [...newArray, data.name]);
     sortedName = newArray.sort();
-    console.log("sortedArray", newArray);
     let sortodData = [];
+    let sortodUser = [];
     sortedName.map((Name) => {
-      sortodData = data.filter((user) => user.name === Name);
+      sortodUser = data.filter((user) => user.name === Name[0]);
+      sortodData.push(sortodUser[0]);
+      sortedName = [];
     });
-
-    console.log("sortedNameArray", sortodData);
+    setData(sortodData);
   };
+
   return (
     <div className="flex flex-col bg-[#F3F4F6] items-center w-screen h-screen gap-[20px]">
-      <h1 className="mt-[50px] font-semibold">User Management</h1>
+      <h1 className="mt-[50px] font-semibold text-2xl">User Management</h1>
 
       {/* add user form */}
-
-      <div className="flex flex-col w-[440px] bg-white size-fit rounded-md p-[16px] gap-[13px]">
-        <div className="flex flex-col gap-[3px]">
-          <span>Name</span>
-          <input
-            className="h-[40px] border border-[#E4E4E7] rounded-md pl-4 w-full"
-            type="text"
-            onChange={(event) => {
-              setFormData({ ...formData, name: event.target.value });
-            }}
-            onKeyDown={(event) => {
-              handleKeyDown(event);
-            }}
-            value={formData.name}
-          />
-        </div>
-        <div className="flex flex-col gap-[3px]">
-          <span>Phone</span>
-          <input
-            className="h-[40px] border border-[#E4E4E7] rounded-md pl-4 w-full"
-            type="tel"
-            onChange={(event) => {
-              setFormData({ ...formData, phone: event.target.value });
-            }}
-            onKeyDown={(event) => {
-              handleKeyDown(event);
-            }}
-            value={formData.phone}
-          />
-        </div>
-        <div className="flex flex-col gap-[3px]">
-          <span>Email</span>
-          <input
-            className="h-[40px] border border-[#E4E4E7] rounded-md pl-4 w-full"
-            type="email"
-            onChange={(event) => {
-              setFormData({ ...formData, email: event.target.value });
-            }}
-            onKeyDown={(event) => {
-              handleKeyDown(event);
-            }}
-            value={formData.email}
-          />
-        </div>
+      <div className="flex flex-col w-[440px] bg-white rounded-md p-[16px] gap-[13px]">
+        <InputForm
+          setFormData={setFormData}
+          handleKeyDown={handleKeyDown}
+          formData={formData}
+          searchByName={searchByName}
+        />
 
         {/* Button soligdoh */}
-
         {activeButtonName === "Add User" && (
           <Button name={activeButtonName} handleFunction={addUser} />
         )}
@@ -177,69 +135,27 @@ function App() {
 
       {/* Search button*/}
       {data.length !== 0 && (
-        <div className="bg-[#3C82F6] flex w-fit rounded-md px-[10px] py-[5px] gap-2">
-          <input
-            className="pl-1"
-            type="search"
-            onChange={(e) => {
-              setInputSearch(e.target.value);
-            }}
-            placeholder="name"
-            value={inputSearch}
-          />
-          <button
-            className="text-white "
-            key="name"
-            onClick={() => searchByName()}
-          >
-            Search
-          </button>
-        </div>
+        <SearchByNameButton
+          setInputSearch={setInputSearch}
+          inputSearch={inputSearch}
+          searchByName={searchByName}
+          searchKeyDown={searchKeyDown}
+        />
       )}
-      {/* Sort button */}
-      <div>
-        <button
-          className=" bg-[#3C82F6] text-white border-none rounded-sm w-fit px-[10px] py-[5px] gap-2"
-          onClick={sort}
-        >
-          Sort (A-Z)
-        </button>
-      </div>
 
+      <SortButton handleFunction={sort} />
       {/* search print */}
       {inputSearch !== "" &&
         filteredData.map((user) => {
-          return (
-            <User
-              name={user.name}
-              phone={user.phone}
-              email={user.email}
-              id={user.id}
-              deleteUser={deleteUser}
-              editUser={editUser}
-              key={user.id}
-            />
-          );
+          return <User {...user} deleteUser={deleteUser} editUser={editUser} />;
         })}
 
-      {/* data print */}
-
+      {/* data $ sort print */}
       {inputSearch === "" &&
         data.map((user) => {
-          return (
-            <User
-              name={user.name}
-              phone={user.phone}
-              email={user.email}
-              id={user.id}
-              deleteUser={deleteUser}
-              editUser={editUser}
-              key={user.id}
-            />
-          );
+          return <User {...user} deleteUser={deleteUser} editUser={editUser} />;
         })}
     </div>
   );
 }
-
 export default App;
